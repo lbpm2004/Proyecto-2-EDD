@@ -8,11 +8,11 @@ package proyecto2edd;
  *
  * @author Hogar
  */
-public class Species {
+public class Especies {
     private String name;
     private String caracteristicas;
     
-    public Species(String name, String caracteristicas) {
+    public Especies(String name, String caracteristicas) {
         this.name = name;
         this.caracteristicas = caracteristicas;
     }
