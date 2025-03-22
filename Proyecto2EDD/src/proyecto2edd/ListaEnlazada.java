@@ -26,7 +26,7 @@ public class ListaEnlazada {
     public void setCabeza(NodoPrimitivo cabeza) {
         this.cabeza = cabeza;
     }
-    public void setTamañ(int tamaño) {
+    public void setTamaño(int tamaño) {
      this.tamaño = tamaño;
     }
     
@@ -34,7 +34,7 @@ public class ListaEnlazada {
         return this.cabeza == null;
     }
     
-    public void agregarALFinal(Object data) {
+    public void agregarALFinal(Object dato) {
         NodoPrimitivo nuevoNodo = new NodoPrimitivo(dato);
         if (this.isEmpty()) {
             this.setCabeza(nuevoNodo);
