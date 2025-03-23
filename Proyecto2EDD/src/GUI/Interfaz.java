@@ -13,6 +13,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.SingleGraph;
 
 /**
  * Clase que representa la interfaz gráfica principal del programa.
@@ -20,36 +23,48 @@ import java.io.FileWriter;
  * @Colaboradores Luis Peña
  */
 public class Interfaz extends javax.swing.JFrame {
-    private JButton btnCargarArchivo;
-    private JButton btnMostrarArbol;
-    private JTextField txtBuscarEspecie;
+    private JLabel instruccion;
+    private JLabel instruccion1;
+    private JButton cargarArchivo;
+    private JButton mostrarRecorridoArbol;
+    private JButton buscarEspecie;
+    private JRadioButton buscarEspeciePorHash;
+    private JRadioButton buscarEspeciePorRecorrido;
+    private JTextField tiempoEjecucion;
     
     /**
      * Constructor que inicializa la interfaz gráfica.
      */
     public Interfaz() {
+        setTitle("Clave Dicotómica");
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
         
-        btnCargarArchivo = new JButton("Cargar Archivo");
-        btnMostrarArbol = new JButton("Mostrar Árbol");
-        txtBuscarEspecie = new JTextField("");
+        //Generación del PAGE_START
+        JPanel pageStart = new JPanel(new GridLayout(1,1));
+        instruccion = new JLabel("¡Bienvenido, por favor presione el botón 'Cargar Archivo' para usar las funciones del programa!");
+        //instruccion.setFont(new Font("Arial",Font.PLAIN, 14));
+        pageStart.add(instruccion);
+        add(pageStart, BorderLayout.PAGE_START);
+        
+        //Generación del LINE_START
+        JPanel lineStart = new JPanel(new GridLayout(6,1)); //Modificable
+        lineStart.add(cargarArchivo = new JButton("Cargar Archivo"));
+        lineStart.add(instruccion1 = new JLabel("Funciones del programa:"));
+        lineStart.add(mostrarRecorridoArbol = new JButton("Mostrar Árbol"));
+        lineStart.add(buscarEspecie = new JButton("Buscar Especie"));
+        lineStart.add(buscarEspeciePorHash = new JRadioButton("Por Hash"));
+        lineStart.add(buscarEspeciePorRecorrido = new JRadioButton("Por Recorrido del árbol"));
+        //lineStart.add();
+        add(lineStart, BorderLayout.LINE_START);
+        
+        
+        
     
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-
+        
         pack();
-    
         
-        
-        btnCargarArchivo.addActionListener(new java.awt.event.ActionListener() {
+        cargarArchivo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 JFileChooser fileChooser = new JFileChooser();
                 int result = fileChooser.showOpenDialog(null);
@@ -61,16 +76,24 @@ public class Interfaz extends javax.swing.JFrame {
             }
         });
         
-        btnMostrarArbol.addActionListener(new java.awt.event.ActionListener() {
+        mostrarRecorridoArbol.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 // Lógica para mostrar el árbol gráficamente usando GraphStream
                 System.out.println("Mostrando árbol...");
             }
         });
         
-        txtBuscarEspecie.addActionListener(new java.awt.event.ActionListener() {
+        buscarEspeciePorHash.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                String especie = txtBuscarEspecie.getText();
+                String especie = buscarEspeciePorHash.getText();
+                System.out.println("Buscando especie: " + especie);
+                // Lógica para buscar la especie
+            }
+        });
+        
+        buscarEspeciePorRecorrido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                String especie = buscarEspeciePorRecorrido.getText();
                 System.out.println("Buscando especie: " + especie);
                 // Lógica para buscar la especie
             }
@@ -92,11 +115,11 @@ public class Interfaz extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 653, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 517, Short.MAX_VALUE)
         );
 
         pack();
@@ -109,8 +132,8 @@ public class Interfaz extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        try {
-            /* Set the Nimbus look and feel */
+        /*try {
+            
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
@@ -121,7 +144,7 @@ public class Interfaz extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        /* Create and display the form */
+        */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Interfaz().setVisible(true);

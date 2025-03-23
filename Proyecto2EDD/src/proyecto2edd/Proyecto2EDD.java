@@ -24,6 +24,8 @@ public class Proyecto2EDD {
         Interfaz interfaz = new Interfaz();
         interfaz.setLocationRelativeTo(null); //método para que la interfaz apareczca centrada
         interfaz.setVisible(true);
+        
+        
     }
     
 }
