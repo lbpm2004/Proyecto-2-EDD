@@ -8,10 +8,10 @@ package proyecto2edd;
  *
  * @author Fabiana Rodríguez
  */
-public class Arbol {
+public class ArbolGeneral {
     private TreeNode root;
     
-    public Arbol() {
+    public ArbolGeneral() {
         this.root = null;
     
     }
