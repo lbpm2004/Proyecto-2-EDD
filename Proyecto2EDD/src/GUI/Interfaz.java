@@ -20,8 +20,9 @@ import java.io.FileWriter;
  * @Colaboradores Luis Peña
  */
 public class Interfaz extends javax.swing.JFrame {
-    
-    
+    private JButton btnCargarArchivo;
+    private JButton btnMostrarArbol;
+    private JTextField txtBuscarEspecie;
     
     /**
      * Constructor que inicializa la interfaz gráfica.
@@ -29,6 +30,10 @@ public class Interfaz extends javax.swing.JFrame {
     public Interfaz() {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         
+        btnCargarArchivo = new JButton("Cargar Archivo");
+        btnMostrarArbol = new JButton("Mostrar Árbol");
+        txtBuscarEspecie = new JTextField("");
+    
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -41,6 +46,35 @@ public class Interfaz extends javax.swing.JFrame {
         );
 
         pack();
+    
+        
+        
+        btnCargarArchivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JFileChooser fileChooser = new JFileChooser();
+                int result = fileChooser.showOpenDialog(null);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    System.out.println("Archivo seleccionado: " + selectedFile.getAbsolutePath());
+                    // Lógica para cargar el archivo JSON
+                }
+            }
+        });
+        
+        btnMostrarArbol.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                // Lógica para mostrar el árbol gráficamente usando GraphStream
+                System.out.println("Mostrando árbol...");
+            }
+        });
+        
+        txtBuscarEspecie.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                String especie = txtBuscarEspecie.getText();
+                System.out.println("Buscando especie: " + especie);
+                // Lógica para buscar la especie
+            }
+        });
     }
 
     /**
