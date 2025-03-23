@@ -2,32 +2,32 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package proyecto2edd;
+package Estructuras;
 
 /**
- * Clase que representa un nodo básico.
+ * Clase que representa un nodo genérico para una lista enlazada.
  * @author Fabiana Rodríguez
  * @Colaboradores Luis Peña
  */
-public class NodoPrimitivo {
-    private Object valorPrimitivo;
-    private NodoPrimitivo siguiente;
+public class Nodo<T> {
+    private T dato; // Valor almacenado en el nodo
+    private Nodo<T> siguiente; // Referencia al siguiente nodo
 
     /**
      * Constructor por defecto.
      */
-    public NodoPrimitivo() {
-        this.valorPrimitivo = null;
+    public Nodo() {
+        this.dato = null;
         this.siguiente = null;
     }
 
     /**
      * Constructor que inicializa el nodo con un valor específico.
      *
-     * @param valorPrimitivo Valor a almacenar en el nodo.
+     * @param dato Valor a almacenar en el nodo.
      */
-    public NodoPrimitivo(Object valorPrimitivo) {
-        this.valorPrimitivo = valorPrimitivo;
+    public Nodo(T dato) {
+        this.dato = dato;
         this.siguiente = null;
     }
 
@@ -36,17 +36,17 @@ public class NodoPrimitivo {
      *
      * @return Valor almacenado en el nodo.
      */
-    public Object getValorPrimitivo() {
-        return valorPrimitivo;
+    public T getDato() {
+        return dato;
     }
 
     /**
      * Establece el valor almacenado en el nodo.
      *
-     * @param valorPrimitivo Nuevo valor a almacenar.
+     * @param dato Nuevo valor a almacenar.
      */
-    public void setValorPrimitivo(Object valorPrimitivo) {
-        this.valorPrimitivo = valorPrimitivo;
+    public void setDato(T dato) {
+        this.dato = dato;
     }
 
     /**
@@ -54,7 +54,7 @@ public class NodoPrimitivo {
      *
      * @return Siguiente nodo en la estructura.
      */
-    public NodoPrimitivo getSiguiente() {
+    public Nodo<T> getSiguiente() {
         return siguiente;
     }
 
@@ -63,7 +63,7 @@ public class NodoPrimitivo {
      *
      * @param siguiente Nuevo nodo siguiente.
      */
-    public void setSiguiente(NodoPrimitivo siguiente) {
+    public void setSiguiente(Nodo<T> siguiente) {
         this.siguiente = siguiente;
     }
 }

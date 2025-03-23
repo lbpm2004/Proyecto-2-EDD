@@ -12,9 +12,11 @@ import java.nio.file.Files;
 
 public class ClaveDicotomica {
     private ABB<String> arbol;
-
+    private TablaHash<String, String> tablaHash;
+    
     public ClaveDicotomica() {
         this.arbol = new ABB<>();
+        this.tablaHash = new TablaHash<>();
     }
 
     /**
@@ -33,6 +35,8 @@ public class ClaveDicotomica {
 
         // Construir el árbol binario
         construirArbol(especiesArray);
+        // Construir la tabla hash
+        construirTablaHash(especiesArray);
     }
 
     /**
@@ -80,7 +84,7 @@ public class ClaveDicotomica {
 
            // Si el nodo no existe, agregarlo al árbol
            if (siguienteNodo == null) {
-               arbol.agregarHijo(nodoActual, pregunta, respuesta); // Pasar el String directamente
+               arbol.agregarHijo(nodoActual, pregunta, respuesta);
                siguienteNodo = respuesta ? nodoActual.getHijoSi() : nodoActual.getHijoNo();
             }
 
@@ -91,7 +95,20 @@ public class ClaveDicotomica {
        // Al final de las preguntas, agregar la especie como hoja
        arbol.agregarHijo(nodoActual, especie, true); // Agregar la especie como "Sí"
     }
-
+    
+    /**
+     * Construye la tabla hash a partir de la lista de especies.
+     *
+     * @param especiesArray Lista de especies en formato JSON.
+     */
+    private void construirTablaHash(JSONArray especiesArray) {
+        for (int i = 0; i < especiesArray.length(); i++) {
+            JSONObject especie = especiesArray.getJSONObject(i);
+            String nombreEspecie = especie.keys().next();
+            tablaHash.insertar(nombreEspecie, nombreEspecie); // Insertar la especie en la tabla hash
+        }
+    }
+    
     /**
      * Método para obtener el árbol binario construido.
      *
@@ -99,5 +116,13 @@ public class ClaveDicotomica {
      */
     public ABB<String> getArbol() {
         return arbol;
+    }
+    
+    /**
+     * Obtiene la tabla hash construida.
+     * @return Tabla hash.
+     */
+    public TablaHash<String, String> getTablaHash() {
+        return tablaHash;
     }
 }

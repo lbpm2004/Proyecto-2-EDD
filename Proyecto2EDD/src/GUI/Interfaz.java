@@ -13,9 +13,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import Estructuras.ClaveDicotomica;
+import Estructuras.ABB;
+import Estructuras.TablaHash;
 
 /**
  * Clase que representa la interfaz gráfica principal del programa.
@@ -23,14 +29,21 @@ import org.graphstream.graph.implementations.SingleGraph;
  * @Colaboradores Luis Peña
  */
 public class Interfaz extends javax.swing.JFrame {
+    private ABB<String> arbol;
+    private TablaHash<String, String> tablaHash;
+    private ClaveDicotomica claveDicotomica;
     private JLabel instruccion;
     private JLabel instruccion1;
+    private JLabel instruccion2;
+    private JLabel instruccion3;
     private JButton cargarArchivo;
     private JButton mostrarRecorridoArbol;
+    private JButton determinarEspecie;
     private JButton buscarEspecie;
     private JRadioButton buscarEspeciePorHash;
     private JRadioButton buscarEspeciePorRecorrido;
-    private JTextField tiempoEjecucion;
+    private JTextField campoBusqueda;
+    
     
     /**
      * Constructor que inicializa la interfaz gráfica.
@@ -39,63 +52,110 @@ public class Interfaz extends javax.swing.JFrame {
         setTitle("Clave Dicotómica");
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        arbol = new ABB<>();
+        tablaHash = new TablaHash<>();
+        claveDicotomica = new ClaveDicotomica();
+        
         
         //Generación del PAGE_START
         JPanel pageStart = new JPanel(new GridLayout(1,1));
         instruccion = new JLabel("¡Bienvenido, por favor presione el botón 'Cargar Archivo' para usar las funciones del programa!");
-        //instruccion.setFont(new Font("Arial",Font.PLAIN, 14));
+        instruccion.setFont(new Font("Arial",Font.PLAIN, 14));
         pageStart.add(instruccion);
         add(pageStart, BorderLayout.PAGE_START);
         
         //Generación del LINE_START
-        JPanel lineStart = new JPanel(new GridLayout(6,1)); //Modificable
+        JPanel lineStart = new JPanel(new GridLayout(10,1));
         lineStart.add(cargarArchivo = new JButton("Cargar Archivo"));
         lineStart.add(instruccion1 = new JLabel("Funciones del programa:"));
         lineStart.add(mostrarRecorridoArbol = new JButton("Mostrar Árbol"));
+        lineStart.add(determinarEspecie = new JButton("Determinar Especie"));
+        lineStart.add(instruccion2 = new JLabel("Introduzca el nombre de la especie:"));
+        lineStart.add(campoBusqueda = new JTextField());
+        lineStart.add(instruccion3 = new JLabel("Seleccione el método de búsqueda y presione el botón:"));
+        ButtonGroup grupoBusqueda = new ButtonGroup();
+        buscarEspeciePorHash = new JRadioButton("Por Hash");
+        buscarEspeciePorRecorrido = new JRadioButton("Por Recorrido del árbol");
+        grupoBusqueda.add(buscarEspeciePorHash);
+        grupoBusqueda.add(buscarEspeciePorRecorrido);
+        lineStart.add(buscarEspeciePorHash);
+        lineStart.add(buscarEspeciePorRecorrido);
         lineStart.add(buscarEspecie = new JButton("Buscar Especie"));
-        lineStart.add(buscarEspeciePorHash = new JRadioButton("Por Hash"));
-        lineStart.add(buscarEspeciePorRecorrido = new JRadioButton("Por Recorrido del árbol"));
-        //lineStart.add();
         add(lineStart, BorderLayout.LINE_START);
-        
-        
-        
-    
         
         pack();
         
-        cargarArchivo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cargarArchivo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 JFileChooser fileChooser = new JFileChooser();
                 int result = fileChooser.showOpenDialog(null);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
-                    System.out.println("Archivo seleccionado: " + selectedFile.getAbsolutePath());
-                    // Lógica para cargar el archivo JSON
+                    try {
+                        // Cargar el archivo JSON
+                        claveDicotomica.cargarArchivo(selectedFile.getAbsolutePath());
+
+                        // Obtener el árbol binario y la tabla hash
+                        arbol = claveDicotomica.getArbol();
+                        tablaHash = claveDicotomica.getTablaHash();
+
+                        // Actualizar la instrucción al usuario
+                        JOptionPane.showMessageDialog(null,"Archivo cargado exitosamente: " + selectedFile.getName());
+                    } catch (IOException e) {
+                        JOptionPane.showMessageDialog(null, "Error al cargar el archivo: " + e.getMessage());
+                    }
+
                 }
             }
         });
         
-        mostrarRecorridoArbol.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                // Lógica para mostrar el árbol gráficamente usando GraphStream
-                System.out.println("Mostrando árbol...");
+        mostrarRecorridoArbol.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                // Lógica para mostrar el árbol con GraphStream
+                
             }
         });
         
-        buscarEspeciePorHash.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                String especie = buscarEspeciePorHash.getText();
-                System.out.println("Buscando especie: " + especie);
-                // Lógica para buscar la especie
+        determinarEspecie.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                //lógica para mostrar las preguntas, en sucesion, y marcar como "Si" o "No" hasta llegar a una especie.
+                
             }
         });
         
-        buscarEspeciePorRecorrido.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                String especie = buscarEspeciePorRecorrido.getText();
-                System.out.println("Buscando especie: " + especie);
-                // Lógica para buscar la especie
+        buscarEspecie.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                String especie = campoBusqueda.getText();
+                if (especie.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor, ingrese el nombre de una especie.");
+                    return;
+                }
+
+                long startTime, endTime;
+                String resultado = "";
+                JPanel center = new JPanel(new GridLayout(5,1));
+                
+                if (buscarEspeciePorHash.isSelected()) {
+                    startTime = System.nanoTime();
+                    resultado = buscarPorHash(especie); // Implementa esta función. Pro
+                    endTime = System.nanoTime();
+                } else if (buscarEspeciePorRecorrido.isSelected()) {
+                    startTime = System.nanoTime();
+                    resultado = buscarPorRecorrido(especie); // Implementa esta función. 
+                    endTime = System.nanoTime();
+                } else {
+                    resultado = "Seleccione un método de búsqueda.";
+                }
+                
+                JLabel resultadoBusqueda = new JLabel(resultado);
+                center.add(resultadoBusqueda);
+                
+                long tiempo = endTime - startTime;
+                JLabel verTiempo = new JLabel("Tiempo de ejecución: " + Long.toString(tiempo) + " ns");
+                center.add(verTiempo);
+                add(center, BorderLayout.CENTER);
+                revalidate();
+                repaint();
             }
         });
     }
@@ -132,19 +192,6 @@ public class Interfaz extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /*try {
-            
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Interfaz().setVisible(true);
