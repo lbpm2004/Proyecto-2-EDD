@@ -18,7 +18,6 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
-import org.graphstream.algorithm.layout.layout;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import Estructuras.ClaveDicotomica;
@@ -28,8 +27,8 @@ import Estructuras.TablaHash;
 
 /**
  * Clase que representa la interfaz gráfica principal del programa.
- * @author Fabiana Rodríguez
- * @Colaboradores Luis Peña
+ * @author Luis Peña
+ * @Colaboradores Fabiana Rodríguez y Drexler Hurtado
  */
 public class Interfaz extends javax.swing.JFrame {
     private ABB<String> arbol;
@@ -46,6 +45,7 @@ public class Interfaz extends javax.swing.JFrame {
     private JRadioButton buscarEspeciePorHash;
     private JRadioButton buscarEspeciePorRecorrido;
     private JTextField campoBusqueda;
+    private JPanel center;
     private int nodeIdCounter = 0; // Contador global para generar IDs únicos
     
     
@@ -140,25 +140,31 @@ public class Interfaz extends javax.swing.JFrame {
         determinarEspecie.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 //lógica para mostrar las preguntas, en sucesion, y marcar como "Si" o "No" hasta llegar a una especie.
-                
+                DeterminarEspecie(); // Llamar a la función determinarEspecie
+
             }
         });
         
         buscarEspecie.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
+                
+                if(center != null){
+                    remove(center);
+                }
+                
                 String especie = campoBusqueda.getText();
                 if (especie.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Por favor, ingrese el nombre de una especie.");
                     return;
                 }
 
-                long startTime, endTime;
+                long startTime=0, endTime=0;
                 String resultado = "";
-                JPanel center = new JPanel(new GridLayout(5,1));
+                center = new JPanel(new GridLayout(3,1));
                 
                 if (buscarEspeciePorHash.isSelected()) {
                     startTime = System.nanoTime();
-                    resultado = buscarPorHash(especie); // Implementa esta función. Pro
+                    resultado = buscarPorHash(especie); // Implementa esta función.
                     endTime = System.nanoTime();
                 } else if (buscarEspeciePorRecorrido.isSelected()) {
                     startTime = System.nanoTime();
@@ -172,7 +178,7 @@ public class Interfaz extends javax.swing.JFrame {
                 center.add(resultadoBusqueda);
                 
                 long tiempo = endTime - startTime;
-                JLabel verTiempo = new JLabel("Tiempo de ejecución: " + Long.toString(tiempo) + " ns");
+                JLabel verTiempo = new JLabel("Tiempo de ejecución: " + Long.toString(tiempo) + " nanosegundos");
                 center.add(verTiempo);
                 add(center, BorderLayout.CENTER);
                 revalidate();
@@ -238,6 +244,144 @@ public class Interfaz extends javax.swing.JFrame {
         int xOffset = 100 / (nivel + 1); // Ajustar el espacio horizontal según el nivel
         agregarNodosConPosiciones(graph, nodoActual.getHijoSi(), nodoGrafo, x - xOffset, y + 100, nivel + 1);
         agregarNodosConPosiciones(graph, nodoActual.getHijoNo(), nodoGrafo, x + xOffset, y + 100, nivel + 1);
+    }
+    
+    private void DeterminarEspecie() {
+        // Verificar si el árbol ha sido cargado
+        if (arbol == null || arbol.getRoot() == null) {
+            JOptionPane.showMessageDialog(null, "No se ha cargado ningún árbol. Por favor, cargue un archivo JSON primero.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Iniciar desde la raíz del árbol
+        NodoABB<String> nodoActual = arbol.getRoot();
+
+        // Recorrer el árbol hasta encontrar una especie
+        while (nodoActual != null) {
+            String valorNodo = nodoActual.getValor();
+
+            // Si el nodo actual es una especie (hoja del árbol)
+            if (tablaHash.buscar(valorNodo) != null) {
+                String caracteristicas = tablaHash.buscar(valorNodo);
+                JOptionPane.showMessageDialog(null, "Especie determinada: " + valorNodo + "\nCaracterísticas: " + caracteristicas, "Resultado", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Si el nodo actual es una pregunta, solicitar respuesta al usuario
+            String respuesta;
+            do {
+                respuesta = obtenerRespuestaUsuario(valorNodo);
+                if (!respuesta.equalsIgnoreCase("Sí") && !respuesta.equalsIgnoreCase("No")) {
+                    JOptionPane.showMessageDialog(null, "Respuesta no válida. Por favor, responda 'Sí' o 'No'.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } while (!respuesta.equalsIgnoreCase("Sí") && !respuesta.equalsIgnoreCase("No"));
+
+            // Avanzar al siguiente nodo según la respuesta
+            if (respuesta.equalsIgnoreCase("Sí")) {
+                nodoActual = nodoActual.getHijoSi();
+            } else {
+                nodoActual = nodoActual.getHijoNo();
+            }
+        }
+
+        // Si no se encuentra ninguna especie
+        JOptionPane.showMessageDialog(null, "No se pudo determinar ninguna especie.", "Resultado", JOptionPane.WARNING_MESSAGE);
+    }
+
+    /**
+    * Obtiene la respuesta del usuario desde una ventana emergente.
+    *
+    * @param pregunta Pregunta a mostrar al usuario.
+    * @return Respuesta del usuario ("Sí" o "No").
+    */
+    private String obtenerRespuestaUsuario(String pregunta) {
+        String[] opciones = {"Sí", "No"};
+        int seleccion = JOptionPane.showOptionDialog(null, pregunta, "Respuesta", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opciones, opciones[0]);
+        return (seleccion == 0) ? "Sí" : "No";
+    }
+    
+    
+    
+    /**
+    * Realiza una búsqueda en el árbol binario para encontrar una especie y reconstruye las preguntas que llevan a dicha especie.
+    *
+    * @param nombreEspecie El nombre de la especie que se desea buscar.
+    * @return Un mensaje indicando si la especie fue encontrada, junto con
+    *         las preguntas que llevan a ella. Si no se encuentra la especie,
+    *         se devuelve un mensaje de error.
+    */
+    private String buscarPorRecorrido(String nombreEspecie) {
+        // Llamar al método recursivo para buscar la especie
+        StringBuilder preguntas = new StringBuilder();
+        boolean encontrada = buscarEspecieConPreguntas(arbol.getRoot(), nombreEspecie, preguntas);
+
+        if (encontrada) {
+            return "Especie encontrada: " + nombreEspecie + "\nPreguntas que llevan a la especie:\n" + preguntas.toString();
+        } else {
+            return "La especie '" + nombreEspecie + "' no fue encontrada.";
+        }
+    }
+    
+    /**
+    * Método recursivo que busca una especie en el árbol binario y reconstruye el camino de preguntas que llevan a dicha especie.
+    *
+    * @param nodo El nodo actual del árbol binario.
+    * @param nombreEspecie El nombre de la especie que se desea buscar.
+    * @param preguntas Un StringBuilder que almacena las preguntas que llevan a la especie durante la búsqueda.
+    * @return true si la especie fue encontrada; false en caso contrario.
+    */
+    private boolean buscarEspecieConPreguntas(NodoABB<String> nodo, String nombreEspecie, StringBuilder preguntas) {
+        if (nodo == null) {
+            return false; // Llegamos al final de una rama sin encontrar la especie
+        }
+
+        // Si el valor del nodo coincide con el nombre de la especie
+        if (nodo.getValor().equalsIgnoreCase(nombreEspecie)) {
+            return true; // Encontramos la especie
+        }
+
+        // Intentar buscar en el subárbol "Sí"
+        preguntas.append("Sí -> ");
+        if (buscarEspecieConPreguntas(nodo.getHijoSi(), nombreEspecie, preguntas)) {
+            return true; // Encontramos la especie en el subárbol "Sí"
+        }
+        preguntas.delete(preguntas.length() - 5, preguntas.length()); // Eliminar "Sí -> " si no se encontró
+
+        // Intentar buscar en el subárbol "No"
+        preguntas.append("No -> ");
+        if (buscarEspecieConPreguntas(nodo.getHijoNo(), nombreEspecie, preguntas)) {
+            return true; // Encontramos la especie en el subárbol "No"
+        }
+        preguntas.delete(preguntas.length() - 6, preguntas.length()); // Eliminar "No -> " si no se encontró
+
+        return false; // No se encontró la especie en este nodo ni en sus hijos
+    }
+    
+    /**
+    * Realiza una búsqueda en la tabla hash para encontrar una especie y, si existe, reconstruye las preguntas que llevan a dicha especie utilizando el árbol binario.
+    *
+    * @param nombreEspecie El nombre de la especie que se desea buscar.
+    * @return Un mensaje indicando si la especie fue encontrada, junto con las preguntas que llevan a ella y sus características. Si no se encuentra la especie, se devuelve un mensaje de error.
+    */
+    private String buscarPorHash(String nombreEspecie) {
+        // Buscar la especie en la tabla hash
+        String especieEncontrada = tablaHash.buscar(nombreEspecie);
+
+        if (especieEncontrada == null) {
+            return "La especie '" + nombreEspecie + "' no fue encontrada en la tabla hash.";
+        }
+
+        // Reconstruir las preguntas que llevan a la especie usando el árbol
+        StringBuilder preguntas = new StringBuilder();
+        boolean encontrada = buscarEspecieConPreguntas(arbol.getRoot(), nombreEspecie, preguntas);
+
+        if (encontrada) {
+            return "Especie encontrada: " + nombreEspecie + 
+                   "\nPreguntas que llevan a la especie:\n" + preguntas.toString() +
+                   "\nCaracterísticas: " + especieEncontrada;
+        } else {
+            return "La especie '" + nombreEspecie + "' fue encontrada en la tabla hash, pero no en el árbol.";
+        }
     }
     
     /**

@@ -83,32 +83,7 @@ public class ABB<T> {
         }
         return hijo;
     }
-    public Especies buscarEspecie(String nombreEspecie) {
-        return buscarEspecieRecursivo(this.root, nombreEspecie);
-    }
-
-    private Especies buscarEspecieRecursivo(NodoABB<T> nodo, String nombreEspecie) {
-        if (nodo == null) {
-            return null; // Llegamos al final de una rama sin encontrar la especie
-        }
-
-        // Si el valor del nodo es una instancia de Especies
-        if (nodo.getValor() instanceof Especies) {
-            Especies especie = (Especies) nodo.getValor();
-            if (especie.getName().equalsIgnoreCase(nombreEspecie)) {
-                return especie; // Encontramos la especie
-            }
-        }
-
-        // Recorremos el subárbol "Sí"
-        Especies resultadoSi = buscarEspecieRecursivo(nodo.getHijoSi(), nombreEspecie);
-        if (resultadoSi != null) {
-            return resultadoSi; // Encontramos la especie en el subárbol "Sí"
-        }
-
-        // Recorremos el subárbol "No"
-        return buscarEspecieRecursivo(nodo.getHijoNo(), nombreEspecie);
-    }
+    
 }
 
 
