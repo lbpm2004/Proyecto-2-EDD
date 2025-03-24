@@ -25,7 +25,6 @@ public class TablaHash<K, V> {
      *
      * @param size Tamaño de la tabla hash.
      */
-    @SuppressWarnings("unchecked")
     public TablaHash(int size) {
         this.size = size;
         this.tabla = new ListaEnlazada[size];
