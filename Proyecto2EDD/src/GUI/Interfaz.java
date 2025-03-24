@@ -17,10 +17,13 @@ import java.io.IOException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.ui.view.Viewer;
+import org.graphstream.algorithm.layout.layout;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import Estructuras.ClaveDicotomica;
 import Estructuras.ABB;
+import Estructuras.NodoABB;
 import Estructuras.TablaHash;
 
 /**
@@ -43,6 +46,7 @@ public class Interfaz extends javax.swing.JFrame {
     private JRadioButton buscarEspeciePorHash;
     private JRadioButton buscarEspeciePorRecorrido;
     private JTextField campoBusqueda;
+    private int nodeIdCounter = 0; // Contador global para generar IDs únicos
     
     
     /**
@@ -104,15 +108,32 @@ public class Interfaz extends javax.swing.JFrame {
                     } catch (IOException e) {
                         JOptionPane.showMessageDialog(null, "Error al cargar el archivo: " + e.getMessage());
                     }
-
                 }
             }
         });
         
         mostrarRecorridoArbol.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                // Lógica para mostrar el árbol con GraphStream
+                // Verificar si el árbol ha sido cargado
+                if (arbol == null || arbol.getRoot() == null) {
+                    JOptionPane.showMessageDialog(null, "No se ha cargado ningún árbol. Por favor, cargue un archivo JSON primero.");
+                    return;
+                }
                 
+                // Configurar el backend de GraphStream
+                System.setProperty("org.graphstream.ui", "swing");
+        
+                // Crear un nuevo grafo
+                Graph graph = new SingleGraph("Clave Dicotómica");
+
+                // Configurar el estilo del grafo
+                graph.setAttribute("ui.stylesheet", "node { fill-color: blue; text-size: 14; text-color: white; } edge { fill-color: black; }");
+
+                // Llamar al método recursivo para agregar nodos y aristas al grafo
+                agregarNodosConPosiciones(graph, arbol.getRoot(), null, 0, 0, 0);
+                
+                // Mostrar el grafo en una ventana
+                graph.display();
             }
         });
         
@@ -185,7 +206,39 @@ public class Interfaz extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
    
-   
+    /**
+    * Método recursivo para agregar nodos al grafo.
+    *
+    * @param graph Grafo de GraphStream.
+    * @param nodoActual Nodo actual del árbol binario.
+    * @param padre Nodo padre en el grafo (puede ser null).
+    */
+    private void agregarNodosConPosiciones(Graph graph, NodoABB<String> nodoActual, Node padre, int x, int y, int nivel) {
+        if (nodoActual == null) {
+            return;
+        }
+
+        // Generar un ID único para el nodo
+        String idNodo = "node_" + nodeIdCounter++;
+        Node nodoGrafo = graph.addNode(idNodo);
+
+        // Establecer posición del nodo
+        nodoGrafo.setAttribute("x", x);
+        nodoGrafo.setAttribute("y", y);
+
+        // Establecer etiqueta del nodo
+        nodoGrafo.setAttribute("ui.label", nodoActual.getValor());
+
+        // Conectar con el padre si existe
+        if (padre != null) {
+            graph.addEdge(padre.getId() + "-" + idNodo, padre, nodoGrafo);
+        }
+
+        // Recursivamente agregar hijos
+        int xOffset = 100 / (nivel + 1); // Ajustar el espacio horizontal según el nivel
+        agregarNodosConPosiciones(graph, nodoActual.getHijoSi(), nodoGrafo, x - xOffset, y + 100, nivel + 1);
+        agregarNodosConPosiciones(graph, nodoActual.getHijoNo(), nodoGrafo, x + xOffset, y + 100, nivel + 1);
+    }
     
     /**
      * Método principal que inicia la aplicación.
