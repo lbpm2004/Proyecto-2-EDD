@@ -10,10 +10,19 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+/**
+ * Clase que representa una clave dicotómica para identificar especies. La clave dicotómica se implementa utilizando un árbol binario (ABB) para almacenar las preguntas y especies, y una tabla hash para indexar las especies por nombre.
+ * 
+ * @author Luis Peña
+ */
 public class ClaveDicotomica {
-    private ABB<String> arbol;
-    private TablaHash<String, String> tablaHash;
-    
+    private ABB<String> arbol; // Árbol binario que almacena las preguntas y especies
+    private TablaHash<String, String> tablaHash; // Tabla hash que indexa las especies por nombre
+
+    /**
+     * Constructor que inicializa una nueva instancia de la clase ClaveDicotomica.
+     * Crea un árbol binario vacío y una tabla hash vacía para almacenar las especies.
+     */
     public ClaveDicotomica() {
         this.arbol = new ABB<>();
         this.tablaHash = new TablaHash<>();

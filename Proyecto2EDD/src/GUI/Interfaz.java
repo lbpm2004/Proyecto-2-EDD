@@ -140,7 +140,7 @@ public class Interfaz extends javax.swing.JFrame {
         determinarEspecie.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 //lógica para mostrar las preguntas, en sucesion, y marcar como "Si" o "No" hasta llegar a una especie.
-                DeterminarEspecie(); // Llamar a la función determinarEspecie
+                DeterminarEspecie(); 
 
             }
         });
@@ -160,7 +160,7 @@ public class Interfaz extends javax.swing.JFrame {
 
                 long startTime=0, endTime=0;
                 String resultado = "";
-                center = new JPanel(new GridLayout(3,1));
+                center = new JPanel(new GridLayout(5,1));
                 
                 if (buscarEspeciePorHash.isSelected()) {
                     startTime = System.nanoTime();
@@ -246,6 +246,9 @@ public class Interfaz extends javax.swing.JFrame {
         agregarNodosConPosiciones(graph, nodoActual.getHijoNo(), nodoGrafo, x + xOffset, y + 100, nivel + 1);
     }
     
+    /**
+    * Método que permite al usuario determinar una especie a través de una serie de preguntas dicotómicas (sí/no) presentadas en sucesión. El proceso comienza desde la raíz del árbol binario y avanza hacia los nodos hoja (especies) según las respuestas del usuario.
+    */
     private void DeterminarEspecie() {
         // Verificar si el árbol ha sido cargado
         if (arbol == null || arbol.getRoot() == null) {
